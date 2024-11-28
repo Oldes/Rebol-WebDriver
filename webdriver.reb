@@ -3,7 +3,7 @@ Rebol [
 	Type:    module
 	Name:    webdriver
 	Date:    03-Jan-2024
-	Version: 0.1.0
+	Version: 0.1.1
 	Author:  @Oldes
 	Home:    https://github.com/Oldes/Rebol-WebDriver
 	Rights:  http://opensource.org/licenses/Apache-2.0
@@ -91,7 +91,7 @@ sys/make-scheme [
 				browser: none
 				counter: 0
 				pending: 0 ;; increments when a new method is sent, decremented when response is received
-				req: #(id: 0 method: none params: #[none]) ;; used to send a command (to avoid cerating a new map)
+				req: make map! [id: 0 method: none params: none] ;; used to send a command (to avoid cerating a new map)
 				page-info: none ;; holds resolved info from an attached page
 				page-conn: none ;; webscocket connection to an attached page
 			]
