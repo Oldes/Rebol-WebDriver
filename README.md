@@ -4,8 +4,7 @@
 
 WebDriver client for the [Rebol](https://github.com/Oldes/Rebol3) programming language.
 
-Currently only `chrome` scheme is implemented which is supposed to be working
-with Chromium, Chrome and other Blink-based browsers.
+Currently, only the _Chrome_ scheme is implemented, designed to work with Chrome, Brave, Blink, and other Chromium-based browsers.
 
 The browser must be started with `remote-debugging` enabled.
 
@@ -30,15 +29,15 @@ system/options/log/http: 0      ;; No HTTP traces
 browser: open chrome://         ;; Initialize Chrome's WebDriver scheme (defaults to localhost:9222)
 
 write browser [                 ;; Sends multiple commands to be evaluated by the WebDriver scheme
-    Network.enable              ;; Enables network tracking, network events will be delivered to the client.
-    http://www.rebol.com        ;; Opens a page in the browser (waits for Page.frameStoppedLoading event).
-    0:0:1                       ;; Waits 1 second while processing possible incomming events.
-                                ;; The wait mentioned above is usually unnecessary!
-                                ;; But some pages modify their content dynamically.
-    DOM.getDocument [depth: -1] ;; Gets the root DOM node and the entire subtree (-1)
+    Network.enable              ;; Enable network tracking to capture network events.
+    http://www.rebol.com        ;; Opens the specified webpage and waits for it to finish loading.
+    0:0:1                       ;; (Optional) Waits for 1 second to process potential incoming events.
+                                ;; This may help with dynamically updated pages.
+    DOM.getDocument [depth: -1] ;; Retrieves the root DOM node along with the entire subtree (depth -1).
 ]
 
-print pick browser 'DOM.getDocument ;; Prints resolved DOM
+print pick browser 'DOM.getDocument ;; Prints the resolved DOM structure
 
 close browser ;; Closes the session gracefully (similar to closing a page in the browser).
 ```
+It 
