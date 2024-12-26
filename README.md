@@ -4,7 +4,7 @@
 
 WebDriver client for the [Rebol](https://github.com/Oldes/Rebol3) programming language.
 
-Currently, only the _Chrome_ scheme is implemented, designed to work with Chrome, Brave, Blink, and other Chromium-based browsers.
+Currently, only the _Chrome_ scheme is implemented, designed to work with Chrome, Brave, Edge, and other Chromium-based browsers.
 
 The browser must be started with `remote-debugging` enabled.
 
@@ -40,4 +40,3 @@ print pick browser 'DOM.getDocument ;; Prints the resolved DOM structure
 
 close browser ;; Closes the session gracefully (similar to closing a page in the browser).
 ```
-It 
