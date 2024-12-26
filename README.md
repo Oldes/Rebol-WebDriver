@@ -17,24 +17,25 @@ For example on macOS start a Brave browser from Terminal using command:
 
 Available methods are documented here: https://chromedevtools.github.io/devtools-protocol/
 
-# Usage example
+# Simple usage example
 
 ```rebol
-import %websocket.reb           ;; The scheme depends on WebSocket module (which is not by default available yet)
+import %websocket.reb           ;; The scheme depends on WebSocket module (which may not be available yet by default)
 import %webdriver.reb           ;; Importing the module from the source file direcly
 
-system/options/quiet: false     ;; Modifies scripts output visibility
-system/options/log/ws: 0        ;; No WebSocket traces
+system/options/quiet:    off    ;; Modifies script's output visibility
+system/options/log/ws:   0      ;; No WebSocket traces
 system/options/log/http: 0      ;; No HTTP traces
 
 browser: open chrome://         ;; Initialize Chrome's WebDriver scheme (defaults to localhost:9222)
 
-probe write browser [           ;; Sends multiple commands to be evaluated by the WebDriver scheme
-	http://www.rebol.com        ;; Opens a page in the browser.
-	Network.enable              ;; Enables network tracking, network events will now be delivered to the client.
-	Page.enable                 ;; Enables page domain notifications.
-	0:0:2                       ;; Waits 2 seconds while processing incomming events.
-	DOM.getDocument [depth: -1] ;; Gets the root DOM node and the entire subtree (-1)
+write browser [                 ;; Sends multiple commands to be evaluated by the WebDriver scheme
+    Network.enable              ;; Enables network tracking, network events will be delivered to the client.
+    http://www.rebol.com        ;; Opens a page in the browser (waits for Page.frameStoppedLoading event).
+    DOM.getDocument [depth: -1] ;; Gets the root DOM node and the entire subtree (-1)
+    0:0:1                       ;; Waits 1 second while processing possible incomming events.
+    Page.close                  ;; Closes the session (like closing the page in the browser)
 ]
 
+print pick browser 'DOM.getDocument ;; Prints resolved DOM
 ```

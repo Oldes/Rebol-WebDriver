@@ -3,7 +3,7 @@ Rebol [
 	Type:    module
 	Name:    websocket
 	Date:    02-Jan-2024
-	Version: 0.2.0
+	Version: 0.2.1
 	Author:  @Oldes
 	Home:    https://github.com/Oldes/Rebol-WebSocket
 	Rights:  http://opensource.org/licenses/Apache-2.0
@@ -15,7 +15,7 @@ Rebol [
 ]
 
 ;--- WebSocket Codec --------------------------------------------------
-append system/options/log [ws: 4]
+system/options/log/ws: 2
 register-codec [
 	name:  'ws
 	type:  'text
@@ -110,6 +110,7 @@ ws-decode: :codecs/ws/decode
 ;--- WebSocket Scheme -------------------------------------------------
 ws-conn-awake: func [event /local port extra parent spec temp] [
 	port: event/port
+	;; wakeup if there is no parent
 	unless parent: port/parent [return true]
 	extra: parent/extra
 	sys/log/debug 'WS ["==TCP-event:" as-red event/type]
@@ -198,9 +199,9 @@ sys/make-scheme [
 					;; store only decoded messages...
 					if fin [append port/data data] ;@@ what if the data are just partial (not final)?
 				]
-				sys/log/more 'WS ["Have" as-yellow length? port/data "messages."]
-				;?? port/data
-				;insert system/ports/system make event! [ type: 'read port: parent ]
+				sys/log/more 'WS ["Received messages:" as-yellow length? port/data]
+				;; notify the parent port
+				insert system/ports/system make event! [ type: 'read port: port/parent ]
 			]
 			wrote [
 				;; don't wake up and instead wait for a response...
