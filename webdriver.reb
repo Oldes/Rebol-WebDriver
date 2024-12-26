@@ -2,8 +2,8 @@ Rebol [
 	Title:  "WebDriver (chrome) scheme"
 	Type:    module
 	Name:    webdriver
-	Date:    25-Dec-2024
-	Version: 0.2.0
+	Date:    26-Dec-2024
+	Version: 0.2.1
 	Author:  @Oldes
 	Home:    https://github.com/Oldes/Rebol-WebDriver
 	Rights:  http://opensource.org/licenses/Apache-2.0
@@ -231,7 +231,6 @@ sys/make-scheme [
 				version: none
 				browser: none
 				counter: 0
-;				pending: 0 ;; increments when a new method is sent, decremented when response is received
 				req: make map! [id: 0 method: none params: none] ;; used to send a command (to avoid cerating a new map)
 				page-info: none ;; holds resolved info from an attached page
 				page-conn: none ;; webscocket connection to an attached page
@@ -265,12 +264,13 @@ sys/make-scheme [
 		]
 		close: func[port /local ctx][
 			ctx: port/extra
-			if ctx/port-conn [
-				try [close ctx/port-conn wait [ctx/page-conn 1]]
-				ctx/port-conn: ctx/port-info: none
+			clear ctx/command-que
+			if ctx/page-conn [
+				write port 'Page.close
+				ctx/page-info: none
 			]
 			if ctx/browser [
-				try [close ctx/browser wait [ctx/browser 1]]
+				close ctx/browser
 				ctx/browser: none 
 			]
 			port
@@ -304,7 +304,6 @@ sys/make-scheme [
 				ctx: port/extra
 				conn: any [ctx/page-conn ctx/browser] 
 			][
-				;clear port/data
 				read conn
 				;wait [conn 1] ;; don't wait more then 1 second if there are no incomming messages
 				;process-packets conn

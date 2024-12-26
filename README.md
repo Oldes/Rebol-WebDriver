@@ -32,10 +32,13 @@ browser: open chrome://         ;; Initialize Chrome's WebDriver scheme (default
 write browser [                 ;; Sends multiple commands to be evaluated by the WebDriver scheme
     Network.enable              ;; Enables network tracking, network events will be delivered to the client.
     http://www.rebol.com        ;; Opens a page in the browser (waits for Page.frameStoppedLoading event).
-    DOM.getDocument [depth: -1] ;; Gets the root DOM node and the entire subtree (-1)
     0:0:1                       ;; Waits 1 second while processing possible incomming events.
-    Page.close                  ;; Closes the session (like closing the page in the browser)
+                                ;; The wait mentioned above is usually unnecessary!
+                                ;; But some pages modify their content dynamically.
+    DOM.getDocument [depth: -1] ;; Gets the root DOM node and the entire subtree (-1)
 ]
 
 print pick browser 'DOM.getDocument ;; Prints resolved DOM
+
+close browser ;; Closes the session gracefully (similar to closing a page in the browser).
 ```
