@@ -105,7 +105,10 @@ process-packets: function[
 					break
 				]
 			]
-		] :print
+		][
+			print system/state/last-error
+			?? packet
+		]
 	]
 	clear conn/data
 ]
