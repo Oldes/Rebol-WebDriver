@@ -44,8 +44,16 @@ write %page.pdf debase tmp/result/data 64 ;; Save the PDF data to a file (encode
 
 ;- Navigating to another webpage within the session
 write browser https://www.theguardian.com/news/series/ten-best-photographs-of-the-day
-;; Content of this page is dynamically updated, so wait for it...
-write browser 0:0:5
+;; Content of this page is dynamically updated, so wait for it.
+write browser 0:0:1
+
+;; Simulate multiple mouse wheel events to scroll the webpage
+loop 10 [
+    write browser [
+        Input.dispatchMouseEvent [type: "mouseWheel" x: 100 y: 100 deltaX: 0 deltaY: 800]
+        0:0:1
+    ]
+]
 
 ;; Received events are stored in the session and may be processed.
 ;; For example, to resolve all loaded JPEG images on the page...
@@ -85,4 +93,41 @@ foreach [n m] take/all browser/extra/events [
 
 ;- Closing the session gracefully
 close browser ;; Close the session (similar to closing a page in the browser).
+```
+
+Note: The above code demonstrates how the WebDriver module can be used to interact with webpages,
+including downloading images dynamically. However, for simpler use cases (e.g., static webpages),
+you can use a more straightforward and faster approach without the WebDriver module:
+
+```rebol
+import html-entities
+
+html: read https://www.theguardian.com/news/series/ten-best-photographs-of-the-day
+
+;- Parse the HTML to extract image URLs and download them
+parse html [any[
+    thru {<picture data-size="jumbo"}                ;; Locate the relevant section for large images
+    thru {<source srcSet="} copy url to dbl-quote    ;; Extract the image URL
+    (
+        image-url: as url! decode 'html-entities url ;; Decode HTML entities in the URL
+        url: decode-url image-url                    ;; Decode the image URL for further processing
+
+        local-file: rejoin [
+            %img_                                    ;; Prefix for the file name
+            checksum to binary! url/path 'md5        ;; Generate a checksum for the image URL
+            #"_" url/target                          ;; Append the target filename
+        ]
+
+        ;; Check if the image is not already downloaded.
+        either exists? local-file [
+            print ["File already downloaded:" as-yellow local-file]
+        ][
+            ;; Download and save the image
+            try/with [
+                write local-file read image-url
+                print ["New image downloaded:" as-green local-file]
+            ] :print
+        ]
+    )
+] to end]
 ```
