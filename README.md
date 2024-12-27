@@ -38,5 +38,51 @@ write browser [                 ;; Sends multiple commands to be evaluated by th
 
 print pick browser 'DOM.getDocument ;; Prints the resolved DOM structure
 
-close browser ;; Closes the session gracefully (similar to closing a page in the browser).
+;- Printing the current webpage to PDF
+tmp: write browser 'Page.printToPDF
+write %page.pdf debase tmp/result/data 64 ;; Save the PDF data to a file (encoded in base64)
+
+;- Navigating to another webpage within the session
+write browser https://www.theguardian.com/news/series/ten-best-photographs-of-the-day
+;; Content of this page is dynamically updated, so wait for it...
+write browser 0:0:5
+
+;; Received events are stored in the session and may be processed.
+;; For example, to resolve all loaded JPEG images on the page...
+foreach [n m] take/all browser/extra/events [
+    if all [
+        n == "Network.responseReceived"       ;; Look for network responses
+        m/type == "Image"                     ;; Specifically, images
+        m/response/status == 200              ;; Ensure the request succeeded
+        m/response/mimeType == "image/avif"   ;; Filter for AVIF images
+    ][
+        probe m/response/url
+        url: decode-url m/response/url        ;; Decode the image URL
+
+        local-file: rejoin [
+            %img_                             ;; Prefix for the file name
+            checksum to binary! url/path 'md5 ;; Generate a checksum for the image URL
+            #"_" url/target                   ;; Append the target filename
+        ]
+
+        ;; Check if the image is not already downloaded.
+        if exists? local-file [
+            print ["File already downloaded:" as-yellow local-file]
+            continue
+        ]
+
+        ;; Request the image body.
+        tmp: write browser compose/deep [Network.getResponseBody [requestId: (m/requestId)]]
+
+        ;; Decode the image data (base64 if necessary).
+        bin: tmp/result/body
+        if tmp/result/base64Encoded [bin: debase bin 64]
+
+        ;; Save the image to disk.
+        probe write local-file bin
+    ]
+]
+
+;- Closing the session gracefully
+close browser ;; Close the session (similar to closing a page in the browser).
 ```
