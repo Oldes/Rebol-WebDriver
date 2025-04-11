@@ -1,4 +1,8 @@
+[![rebol-webdriver](https://github.com/user-attachments/assets/06e88a9a-f001-4361-9da9-32774fe05e0b)](https://github.com/Oldes/Rebol-WebDriver)
+
+
 [![Gitter](https://badges.gitter.im/rebol3/community.svg)](https://app.gitter.im/#/room/#Rebol3:gitter.im)
+[![Zulip](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://rebol.zulipchat.com/)
 
 # Rebol/WebDriver
 
