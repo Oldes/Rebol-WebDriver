@@ -181,3 +181,5 @@ write browser [Page.close]
 ;; Close the session.
 close browser
 ```
+<img width="913" height="1557" alt="image" src="https://github.com/user-attachments/assets/8f99f502-e41d-4a81-ae09-77aaee6309c5" />
+
