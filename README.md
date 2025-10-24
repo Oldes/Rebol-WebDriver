@@ -135,3 +135,49 @@ parse html [any[
     )
 ] to end]
 ```
+
+# Other useful examples
+## Get all links from a given web page
+```rebol
+;; Initialize the browser scheme...
+browser: open chrome://
+res: write browser [
+    https://www.rebol.com  ;; Open some web page.
+    DOM.getDocument        ;; Get document's root node (not the full one!).
+]
+;; Check session results
+try/with [
+    session:  res/1/result ;; Not used.
+    document: res/2/result ;; To get nodeId of the document root.
+][
+    ;; Quit early in case of insufficient info.
+    print "Failed to initialize a session."
+    quit
+]
+;; Query all nodes of type A (links)
+res: write browser compose/deep [
+    DOM.querySelectorAll [
+        nodeId: (document/root/nodeId)
+        selector: "a"
+    ]
+]
+;; If any nodes are found, query the outer HTML of each.
+if all [
+    map? res
+    block? nodes: res/result/nodeIDs
+][ 
+    links: copy []
+    foreach node nodes [
+        res: write browser compose/deep [DOM.getOuterHTML [nodeId: (node)]]
+        try [append links res/result/outerHTML]
+        
+    ]
+    ;; Print results.
+    print ["Found" length? nodes "link (A) nodes"]
+    foreach link links [ print link ]
+]
+;; Close page in the browser.
+write browser [Page.close]
+;; Close the session.
+close browser
+```
