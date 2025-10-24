@@ -10,7 +10,7 @@ WebDriver client for the [Rebol](https://github.com/Oldes/Rebol3) programming la
 
 Currently, only the _Chrome_ scheme is implemented, designed to work with Chrome, Brave, Edge, and other Chromium-based browsers.
 
-The browser must be started with `remote-debugging` enabled.
+**The browser must be started with `remote-debugging` enabled.**
 
 For example on macOS start a Brave browser from Terminal using command:
 
