@@ -17,6 +17,14 @@ For example on macOS start a Brave browser from Terminal using command:
 ```terminal
 /Applications/Brave\ Browser.app/Contents/MacOS/Brave\ Browser --remote-debugging-port=9222
 ```
+On Windows for example:
+```terminal
+"c:\Program Files\BraveSoftware\Brave-Browser\Application\Brave.exe" --remote-debugging-port=9222
+```
+or
+```terminal
+"C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222
+```
 
 Available methods are documented here: https://chromedevtools.github.io/devtools-protocol/
 
